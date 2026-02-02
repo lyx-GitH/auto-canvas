@@ -108,56 +108,50 @@ Download new slides to `{course_folder}/slides/`
 
 Create `hw{N}/` folder and download description + attachments.
 
-### Step 5: Spawn Sub-Agents (Parallel, Isolated)
+### Step 5: Spawn Sub-Agents and Continue Working (Non-Blocking)
 
-**IMPORTANT: Use sub-agents to avoid context pollution and prevent file conflicts.**
+**CRITICAL: DO NOT WAIT for sub-agents. Launch them in background and IMMEDIATELY continue to the next task.**
 
 #### Architecture
 
 ```
 Master Agent (this skill)
     |
-    +-> Sub-Agent A: Homework Completion
-    |   +-> writes to: /tmp/hw-notes-{course}.md
+    |-- [BACKGROUND] Spawn Lecture Summarization sub-agents
+    |       (run_in_background: true, DO NOT WAIT)
     |
-    +-> Sub-Agent B: Lecture Summarization
-    |   +-> writes to: /tmp/lecture-notes-{course}.md
+    |-- [FOREGROUND] Continue to Step 5.2: Complete homework assignments
+    |       (Master does this work directly, or spawns homework agents)
     |
-    +-> After BOTH complete:
-        +-> Master merges into: {course_folder}/notes.md
+    |-- [FINALLY] Step 6: Check sub-agent completion and merge notes
 ```
 
-#### 5.1: Spawn Homework Sub-Agent (if new assignments)
+**Key principle:** Lecture summarization is I/O-bound (reading PDFs, calling APIs). Homework completion requires reasoning. Run summarization in background while master focuses on homework.
+
+#### 5.1: Spawn Lecture Summarization Sub-Agents (BACKGROUND - DO NOT WAIT)
+
+**First, check the summarization backend from config.**
+
+Spawn summarization agents with `run_in_background: true`. **Do NOT use TaskOutput to wait for them yet.** Immediately proceed to Step 5.2 after spawning.
+
+#### 5.2: Complete Homework Assignments (FOREGROUND - Master does this)
+
+**After spawning summarization agents, IMMEDIATELY start working on homework.**
+
+For each new assignment found:
+- Call `/autocanvas-do-my-homework {homework_path}` directly
+- OR spawn homework sub-agents (but these can run in foreground since homework is the main task)
+
+The master agent should actively work on homework while summarization runs in background.
+
+#### 5.3: Summarization Sub-Agent Details
+
+**Spawn these FIRST (before homework), then move on without waiting:**
 
 ```python
 # Task tool parameters
 subagent_type: "general-purpose"
-run_in_background: true
-description: "Complete homework for {course}"
-prompt: """
-Complete the homework at {homework_path}
-
-IMPORTANT: When baking notes, write to /tmp/hw-notes-{course}.md instead of notes.md directly.
-This avoids conflicts with parallel lecture summarization.
-
-Follow /autocanvas-do-my-homework procedure but output notes to the temp file.
-"""
-```
-
-#### 5.2: Spawn Lecture Summarization Sub-Agent (if new slides)
-
-**First, check the summarization backend from config:**
-
-```bash
-SUMM_BACKEND=$(python3 "${CLAUDE_PLUGIN_ROOT}/scripts/load_config.py" --summarization-backend)
-```
-
-**If using Gemini backend:**
-
-```python
-# Task tool parameters
-subagent_type: "general-purpose"
-run_in_background: true
+run_in_background: true  # CRITICAL: must be true
 description: "Summarize lectures for {course}"
 prompt: """
 Summarize new lecture slides for {course} and write to /tmp/lecture-notes-{course}.md
@@ -165,58 +159,32 @@ Summarize new lecture slides for {course} and write to /tmp/lecture-notes-{cours
 Slides to process:
 {list of new slide paths}
 
-For EACH slide not already in notes:
-1. Run gemini_api.py to summarize:
-   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/gemini_api.py" "{slide}" \
-     "Extract exam-relevant content:
-     - Key Concepts: Core definitions, theorems, techniques
-     - Formulas: Important equations with explanations
-     - Exam Focus: Topics likely to appear on exams
-     Format as markdown." \
-     -o /tmp/summary-{slide_name}.md
-
-2. Read the summary and append to /tmp/lecture-notes-{course}.md
-
-Process multiple slides in parallel using background bash commands.
+Write output ONLY to /tmp/lecture-notes-{course}.md (not to notes.md directly).
 """
+```
+
+**After spawning, DO NOT call TaskOutput. Proceed immediately to homework.**
+
+#### Summarization Prompt Templates (for Step 5.3)
+
+**If using Gemini backend:**
+```
+Summarize new lecture slides for {course}.
+Use: python3 ~/.claude/skills/scripts/gemini_api.py "{slide}" "Extract exam-relevant content..." -o /tmp/summary-{slide}.md
+Write final output to /tmp/lecture-notes-{course}.md
 ```
 
 **If using Claude backend:**
-
-```python
-# Task tool parameters
-subagent_type: "general-purpose"
-run_in_background: true
-model: "sonnet"
-description: "Summarize lectures for {course}"
-prompt: """
-Summarize new lecture slides for {course} and write to /tmp/lecture-notes-{course}.md
-
-Slides to process:
-{list of new slide paths}
-
-For EACH slide not already in notes:
-1. Read the PDF file directly using the Read tool
-2. Extract exam-relevant content:
-   - Key Concepts: Core definitions, theorems, techniques
-   - Formulas: Important equations with explanations
-   - Exam Focus: Topics likely to appear on exams
-3. Append the summary to /tmp/lecture-notes-{course}.md with format:
-   ---
-   ## Lecture: {slide_name}
-   *Added: {date}*
-
-   {summary content}
-
-   ---
-
-Process slides sequentially to avoid conflicts.
-"""
+```
+Read PDFs directly with Read tool. Extract key concepts, formulas, exam focus.
+Write output to /tmp/lecture-notes-{course}.md
 ```
 
-### Step 6: Wait and Merge Notes
+---
 
-After spawning sub-agents, wait for completion, then merge:
+### Step 6: After Homework Done, Check Sub-Agents and Merge Notes
+
+**Only after completing all homework in Step 5.2**, check if background summarization agents are done:
 
 ```bash
 # Wait for sub-agents to complete (check task status)
