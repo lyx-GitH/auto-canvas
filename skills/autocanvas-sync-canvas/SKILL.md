@@ -275,6 +275,21 @@ done
 - {items needing attention}
 ```
 
+### Step 8: Cleanup Temporary Files
+
+**After all tasks are complete, clean up any remaining temp files:**
+
+```bash
+# Remove all temporary files created during sync
+rm -f /tmp/hw-notes-*.md
+rm -f /tmp/lecture-notes-*.md
+rm -f /tmp/summary-*.md
+rm -f /tmp/codex-result.md
+rm -f /tmp/gemini-result.md
+```
+
+**This step is MANDATORY.** Always clean up temp files at the end of the sync process.
+
 ## Key Design Principles
 
 1. **Config-driven** - All paths and settings from `.canvas-config.json`
