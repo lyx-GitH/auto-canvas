@@ -1,0 +1,11 @@
+{
+  "name": "auto-canvas",
+  "version": "1.0.0",
+  "description": "Auto-sync coursework from Canvas LMS, complete assignments, and manage study notes",
+  "author": {
+    "name": "liuyuxuan"
+  },
+  "repository": "https://github.com/liuyuxuan/auto-canvas",
+  "license": "MIT",
+  "keywords": ["canvas", "lms", "homework", "education", "coursework", "automation"]
+}

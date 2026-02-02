@@ -1,0 +1,17 @@
+{
+  "canvas_base_url": "https://your-school.instructure.com",
+  "cookies_file": "./cookies.json",
+  "gemini_env_file": "./.env",
+  "courses": [
+    {
+      "id": "123456",
+      "folder": "CS101_Intro",
+      "name": "Introduction to Computer Science"
+    },
+    {
+      "id": "789012",
+      "folder": "MATH201_Calc",
+      "name": "Calculus II"
+    }
+  ]
+}

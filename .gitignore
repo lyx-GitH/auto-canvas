@@ -1,0 +1,34 @@
+# Secrets - NEVER commit these
+cookies.json
+.env
+*.env
+
+# Config with credentials
+.canvas-config.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+
+# Temporary files
+/tmp/
+*.tmp

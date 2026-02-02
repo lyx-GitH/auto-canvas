@@ -1,0 +1,35 @@
+# Homework Folder
+
+This folder contains coursework and assignments.
+
+## Configuration
+
+- Canvas config: `.canvas-config.json`
+- Canvas cookies: `cookies.json` (do not commit)
+- API keys: `.env` (do not commit)
+
+## Courses
+
+| Folder | Course | Canvas ID |
+|--------|--------|-----------|
+| `CS101_Intro/` | Introduction to Computer Science | 123456 |
+| `MATH201_Calc/` | Calculus II | 789012 |
+
+## Folder Structure
+
+Each course folder follows this schema:
+```
+<course_folder>/
+├── notes.md          # Exam prep notes (cumulative)
+├── syllabus.pdf      # Course syllabus
+├── slides/           # Lecture slides
+└── hw<N>/            # Homework folders
+    ├── description.md
+    ├── solution.tex
+    └── solution.pdf
+```
+
+## Skills
+
+- `/sync-canvas` - Fetch new slides/homework from Canvas, auto-complete eligible assignments, update notes
+- `/do-my-homework <path>` - Complete a specific homework or project
