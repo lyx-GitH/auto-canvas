@@ -1,6 +1,6 @@
 ---
 name: autocanvas-sync-canvas
-description: Sync coursework from Canvas LMS. Fetches new slides and homework, places them correctly, auto-completes eligible assignments, and updates study notes. Use when asked to "sync canvas", "check for new homework", "update courses", or "fetch slides".
+description: Sync coursework from Canvas LMS. Fetches new slides and homework, then COMPLETES all new assignments by calling /autocanvas-do-my-homework for each one. Also summarizes lectures and updates study notes. Use when asked to "sync canvas", "check for new homework", "update courses", or "fetch slides". IMPORTANT - This skill MUST call /autocanvas-do-my-homework to solve homework, not just download it.
 argument-hint: [course-name] (optional, syncs all courses if omitted)
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep, WebFetch, Task, Skill
 user-invocable: true
@@ -134,15 +134,37 @@ Master Agent (this skill)
 
 Spawn summarization agents with `run_in_background: true`. **Do NOT use TaskOutput to wait for them yet.** Immediately proceed to Step 5.2 after spawning.
 
-#### 5.2: Complete Homework Assignments (FOREGROUND - Master does this)
+#### 5.2: Complete Homework Assignments (FOREGROUND - MANDATORY)
 
-**After spawning summarization agents, IMMEDIATELY start working on homework.**
+**CRITICAL: After spawning summarization agents, you MUST complete the homework assignments.**
 
-For each new assignment found:
-- Call `/autocanvas-do-my-homework {homework_path}` directly
-- OR spawn homework sub-agents (but these can run in foreground since homework is the main task)
+**This is the main purpose of /autocanvas-sync-canvas - do not skip this step!**
 
-The master agent should actively work on homework while summarization runs in background.
+For EACH new assignment found in Step 4:
+
+1. **Use the Skill tool to invoke `/autocanvas-do-my-homework`:**
+   ```python
+   # Use Skill tool with these parameters:
+   skill: "autocanvas-do-my-homework"
+   args: "{homework_path}"
+   ```
+
+2. **Example:** If you found new homework at `CS101_Intro/hw2/`:
+   ```
+   Invoke Skill tool:
+     skill: "autocanvas-do-my-homework"
+     args: "CS101_Intro/hw2/"
+   ```
+
+3. **Repeat for each new assignment** - do not stop after one.
+
+**DO NOT:**
+- Skip homework completion
+- Only download files without solving
+- Wait for summarization before starting homework
+- Forget to call /autocanvas-do-my-homework
+
+**The homework MUST be solved. This is not optional.**
 
 #### 5.3: Summarization Sub-Agent Details
 
