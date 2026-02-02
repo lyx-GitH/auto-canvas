@@ -208,19 +208,24 @@ The `.gitignore` template excludes these automatically.
 2. Authenticates with Canvas using cookies
 3. Fetches file/assignment lists via Canvas API
 4. Downloads only new content (delta sync)
-5. Spawns parallel sub-agents for:
-   - Homework completion (`/autocanvas-do-my-homework`)
-   - Lecture summarization (`/autocanvas-gemini`)
-6. Merges results into `notes.md`
+5. Asks user if they want to auto-complete new homework
+6. If yes, calls `/autocanvas-do-my-homework` for each assignment
+7. Spawns background sub-agents for lecture summarization
+8. Merges results into `notes.md` and cleans up temp files
 
 ### `/autocanvas-do-my-homework`
 
 1. Parses assignment description (PDF/MD/images)
-2. Creates structured workspace
-3. Solves problems (uses `/autocanvas-codex` for complex math)
-4. Generates concise LaTeX solution
-5. Optionally "bakes" key concepts into `notes.md`
-6. Compiles to PDF
+2. Extracts course name, assignment name, and type
+3. **Capability check** - Skips if assignment requires:
+   - GUI/beyond-terminal software
+   - Physical operations (lab work, experiments)
+   - Group work (team projects, peer review)
+4. Creates structured workspace
+5. Solves problems (uses `/autocanvas-codex` for complex math)
+6. Generates concise LaTeX solution
+7. Optionally "bakes" key concepts into `notes.md`
+8. Compiles to PDF
 
 ### Study Notes Philosophy
 
