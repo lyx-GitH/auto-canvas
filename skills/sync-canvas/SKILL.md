@@ -146,6 +146,14 @@ Follow /do-my-homework procedure but output notes to the temp file.
 
 #### 5.2: Spawn Lecture Summarization Sub-Agent (if new slides)
 
+**First, check the summarization backend from config:**
+
+```bash
+SUMM_BACKEND=$(python3 "${CLAUDE_PLUGIN_ROOT}/scripts/load_config.py" --summarization-backend)
+```
+
+**If using Gemini backend:**
+
 ```python
 # Task tool parameters
 subagent_type: "general-purpose"
@@ -170,6 +178,39 @@ For EACH slide not already in notes:
 2. Read the summary and append to /tmp/lecture-notes-{course}.md
 
 Process multiple slides in parallel using background bash commands.
+"""
+```
+
+**If using Claude backend:**
+
+```python
+# Task tool parameters
+subagent_type: "general-purpose"
+run_in_background: true
+model: "sonnet"
+description: "Summarize lectures for {course}"
+prompt: """
+Summarize new lecture slides for {course} and write to /tmp/lecture-notes-{course}.md
+
+Slides to process:
+{list of new slide paths}
+
+For EACH slide not already in notes:
+1. Read the PDF file directly using the Read tool
+2. Extract exam-relevant content:
+   - Key Concepts: Core definitions, theorems, techniques
+   - Formulas: Important equations with explanations
+   - Exam Focus: Topics likely to appear on exams
+3. Append the summary to /tmp/lecture-notes-{course}.md with format:
+   ---
+   ## Lecture: {slide_name}
+   *Added: {date}*
+
+   {summary content}
+
+   ---
+
+Process slides sequentially to avoid conflicts.
 """
 ```
 

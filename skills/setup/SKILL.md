@@ -136,17 +136,30 @@ For each selected course, ask for folder name:
 - Suggest format: `{DEPT}{NUM}_{ShortName}` (e.g., `CS101_Intro`)
 - User can accept suggestion or provide custom name
 
-### Step 7: Optional - Gemini API Key
+### Step 7: Document Analysis Backend (Gemini vs Claude)
 
 Use AskUserQuestion:
-- Question: "Do you want to set up Gemini API for lecture summarization?"
+- Question: "For PDF/lecture summarization, do you want to use Google Gemini or Claude?"
+- Header: "Summarization"
 - Options:
-  - "Yes, I have a Gemini API key"
-  - "Skip for now"
+  - "Google Gemini (requires API key, better for PDFs)"
+  - "Claude subagent (no extra setup needed)"
 
-If yes:
+**If user selects Gemini:**
+
 - Ask user to provide their GEMINI_API_KEY
 - Create `.env` file with the key
+- Set config values:
+  - `summarization_backend`: `"gemini"`
+  - `gemini_model`: `"gemini-3-flash-preview"` (default, or let user choose)
+
+**If user selects Claude:**
+
+- Set config values:
+  - `summarization_backend`: `"claude"`
+  - `gemini_model`: `null`
+
+**Note:** Claude can read PDFs directly but Gemini may provide better multimodal analysis for complex diagrams.
 
 ### Step 8: Complex Reasoning Backend (Codex vs Claude)
 
@@ -210,6 +223,8 @@ config = {
     "canvas_base_url": "{CANVAS_URL}",
     "cookies_file": "./cookies.json",
     "gemini_env_file": "./.env",
+    "summarization_backend": "gemini",  # or "claude"
+    "gemini_model": "gemini-3-flash-preview",  # null if using claude
     "reasoning_backend": "codex",  # or "claude"
     "codex_model": "gpt-5.2-codex-xhigh",  # null if using claude
     "courses": [

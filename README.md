@@ -7,7 +7,7 @@ A Claude Code plugin for automating coursework from Canvas LMS. Syncs slides and
 - **`/setup`** - Interactive setup wizard (run this first!)
 - **`/sync-canvas`** - Fetch new slides and homework from Canvas LMS
 - **`/do-my-homework`** - Complete assignments with LaTeX output and study notes
-- **`/gemini`** - Delegate PDF/image analysis to Google Gemini
+- **`/gemini`** - Delegate PDF/image analysis (Gemini or Claude subagent)
 - **`/codex`** - Delegate complex reasoning (Codex or Claude subagent)
 
 ## Quick Start
@@ -43,6 +43,7 @@ The setup wizard will guide you through:
 - Entering your Canvas URL
 - Fetching your course list automatically
 - Selecting which courses to sync
+- Choosing summarization backend (Gemini or Claude)
 - Choosing reasoning backend (Codex or Claude)
 - Creating the folder structure
 
@@ -72,6 +73,8 @@ Create `.canvas-config.json`:
   "canvas_base_url": "https://your-school.instructure.com",
   "cookies_file": "./cookies.json",
   "gemini_env_file": "./.env",
+  "summarization_backend": "gemini",
+  "gemini_model": "gemini-3-flash-preview",
   "reasoning_backend": "codex",
   "codex_model": "gpt-5.2-codex-xhigh",
   "courses": [
@@ -84,7 +87,7 @@ Create `.canvas-config.json`:
 }
 ```
 
-**Note:** Set `reasoning_backend` to `"claude"` if you don't have Codex installed.
+**Note:** Set `summarization_backend` to `"claude"` if you don't have a Gemini API key, and `reasoning_backend` to `"claude"` if you don't have Codex installed.
 
 ### 3. Set Up API Keys (Optional)
 
@@ -163,6 +166,8 @@ After setup, your homework folder will look like:
 | `canvas_base_url` | Your school's Canvas URL (e.g., `https://school.instructure.com`) |
 | `cookies_file` | Path to cookies.json (relative to config file) |
 | `gemini_env_file` | Path to .env with GEMINI_API_KEY |
+| `summarization_backend` | `"gemini"` or `"claude"` - backend for PDF/lecture analysis |
+| `gemini_model` | Gemini model to use (default: `gemini-3-flash-preview`) |
 | `reasoning_backend` | `"codex"` or `"claude"` - backend for complex reasoning |
 | `codex_model` | Codex model to use (default: `gpt-5.2-codex-xhigh`) |
 | `courses` | Array of course objects |

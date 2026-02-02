@@ -1,18 +1,45 @@
 ---
 name: gemini
-description: Delegate tasks to Google Gemini API for multimodal reasoning, PDF analysis, and image understanding. Use for summarizing documents, analyzing visuals, or tasks requiring Gemini's multimodal capabilities.
-argument-hint: <task description including file paths if needed>
-allowed-tools: Bash, Read, Write, Glob, Grep
+description: Delegate tasks to the configured summarization backend (Gemini or Claude) for PDF analysis, image understanding, and document summarization. Use for summarizing lectures, analyzing diagrams, or extracting content from documents.
+argument-hint: <file_path> "<prompt>"
+allowed-tools: Bash, Read, Write, Glob, Grep, Task
 user-invocable: true
 ---
 
-# Gemini Delegation Skill
+# Document Analysis Skill
 
-Delegate tasks to Google Gemini API for multimodal reasoning and document analysis.
+Delegate PDF/image analysis to either Google Gemini or a Claude subagent, based on configuration.
 
-**Default Model:** `gemini-3-flash-preview` (recommended for best performance)
+## Step 0: Check Summarization Backend
 
-## Usage
+**First, determine which backend to use from config:**
+
+```bash
+# Check config for summarization backend
+if [ -f ".canvas-config.json" ]; then
+    BACKEND=$(python3 -c "import json; c=json.load(open('.canvas-config.json')); print(c.get('summarization_backend', 'claude'))")
+    MODEL=$(python3 -c "import json; c=json.load(open('.canvas-config.json')); print(c.get('gemini_model', 'gemini-3-flash-preview'))")
+else
+    BACKEND="claude"
+    MODEL=""
+fi
+echo "Backend: $BACKEND, Model: $MODEL"
+```
+
+**If `summarization_backend` is `"gemini"`:** Use Gemini API (see Gemini Backend section)
+**If `summarization_backend` is `"claude"`:** Use Claude subagent (see Claude Backend section)
+
+---
+
+## Gemini Backend
+
+### Prerequisites
+
+- Python 3.8+
+- `google-genai` package: `pip install google-genai python-dotenv`
+- API key in `.env` as `GEMINI_API_KEY`
+
+### Usage
 
 ```bash
 python3 "${CLAUDE_PLUGIN_ROOT}/scripts/gemini_api.py" <file_path> "<prompt>" [-m MODEL] [-o OUTPUT]
@@ -21,32 +48,17 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/gemini_api.py" <file_path> "<prompt>" [-m
 **Arguments:**
 - `file_path` - Path to PDF or image file (.pdf, .png, .jpg, .jpeg, .gif, .webp)
 - `prompt` - Task or question for Gemini
-- `-m, --model` - Model to use (default: `gemini-3-flash-preview`)
+- `-m, --model` - Model to use (default from config: `gemini-3-flash-preview`)
 - `-o, --output` - Output file path (default: `/tmp/gemini-result.md`)
 
-**Available Models:**
-- `gemini-3-flash-preview` - Default, recommended for best quality
-- `gemini-2.5-flash` - Faster, good for simple tasks
-- `gemini-2.5-pro` - Most capable, for complex analysis
+### Examples
 
-## Examples
-
-### Basic PDF Summary
+**Basic PDF Summary:**
 ```bash
 python3 "${CLAUDE_PLUGIN_ROOT}/scripts/gemini_api.py" lecture.pdf "Summarize for exam prep"
 ```
 
-### With Custom Model
-```bash
-python3 "${CLAUDE_PLUGIN_ROOT}/scripts/gemini_api.py" slide.pdf "Extract key concepts" -m gemini-2.5-flash
-```
-
-### With Custom Output
-```bash
-python3 "${CLAUDE_PLUGIN_ROOT}/scripts/gemini_api.py" diagram.png "Explain this diagram" -o /tmp/diagram-analysis.md
-```
-
-### Exam Prep Template
+**Exam Prep Template:**
 ```bash
 python3 "${CLAUDE_PLUGIN_ROOT}/scripts/gemini_api.py" ./slides/lecture5.pdf \
   "Extract exam-relevant content:
@@ -57,33 +69,118 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/gemini_api.py" ./slides/lecture5.pdf \
 Format as markdown. Be comprehensive."
 ```
 
-## Output
+### Output
 
 - Result is printed to stdout
 - Also saved to output file (default: `/tmp/gemini-result.md`)
 - Use the Read tool to retrieve the output file if needed
 
-## Prerequisites
+---
 
-- Python 3.8+
-- `google-genai` package: `pip install google-genai python-dotenv`
-- API key in `.env` as `GEMINI_API_KEY`
+## Claude Backend
 
-The script searches for `.env` in:
-1. Current working directory
-2. Plugin root directory
-3. Home directory
+When Gemini is not configured, use a Claude subagent for document analysis.
 
-Or specify custom path in `.canvas-config.json`:
-```json
-{
-  "gemini_env_file": "./path/to/.env"
-}
+### Execution
+
+Use the Task tool to spawn an analysis subagent:
+
+```python
+# Task tool parameters
+subagent_type: "general-purpose"
+model: "sonnet"  # Good balance of speed and quality for summarization
+description: "Analyze document: {filename}"
+prompt: """
+Analyze the following document and respond to the user's request.
+
+FILE: {file_path}
+(Read this file using the Read tool - Claude can read PDFs directly)
+
+USER REQUEST:
+{prompt}
+
+Provide a thorough, well-structured response.
+"""
+```
+
+### Example: Lecture Summary with Claude
+
+```python
+# Task tool parameters
+subagent_type: "general-purpose"
+model: "sonnet"
+description: "Summarize lecture PDF"
+prompt: """
+Read and analyze the lecture slides at: {file_path}
+
+Extract exam-relevant content:
+- Key Concepts: Core definitions, theorems, techniques
+- Formulas: Important equations with explanations
+- Exam Focus: Topics likely to appear on exams
+
+Format as markdown. Be comprehensive.
+"""
+```
+
+### Example: Diagram Analysis with Claude
+
+```python
+# Task tool parameters
+subagent_type: "general-purpose"
+model: "sonnet"
+description: "Analyze diagram"
+prompt: """
+Read and analyze the image at: {file_path}
+
+Explain:
+1. What the diagram represents
+2. Key components and their relationships
+3. Important concepts illustrated
+
+Be detailed and clear.
+"""
+```
+
+---
+
+## Task Templates
+
+### Exam Prep Template
+```
+Extract exam-relevant content from this document:
+
+- Key Concepts: Core definitions, theorems, techniques
+- Formulas: Important equations with explanations
+- Exam Focus: Topics likely to appear on exams
+- Practice Problems: Example questions based on the material
+
+Format as markdown.
+```
+
+### Quick Summary Template
+```
+Provide a concise summary of this document:
+
+1. Main topics covered
+2. Key takeaways
+3. Important terms defined
+
+Keep it brief but comprehensive.
+```
+
+### Diagram Analysis Template
+```
+Analyze this diagram/figure:
+
+1. What does it represent?
+2. Key components and labels
+3. Relationships between elements
+4. Concepts being illustrated
 ```
 
 ## Tips
 
-- Use absolute paths or paths relative to current directory
-- For large documents (>10MB), the script auto-uses Files API
-- Check stderr for errors if results seem empty
-- Use unique output filenames (`-o`) if running multiple queries in parallel
+- For PDFs with complex diagrams, Gemini often provides better visual analysis
+- Claude can read PDFs directly but processes them as text
+- Use specific prompts for better results
+- For large documents, consider processing page by page
