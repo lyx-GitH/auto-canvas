@@ -18,12 +18,14 @@ Delegate tasks requiring deep reasoning to either OpenAI Codex or a Claude subag
 # Check config for reasoning backend
 if [ -f ".canvas-config.json" ]; then
     BACKEND=$(python3 -c "import json; c=json.load(open('.canvas-config.json')); print(c.get('reasoning_backend', 'claude'))")
-    MODEL=$(python3 -c "import json; c=json.load(open('.canvas-config.json')); print(c.get('codex_model', 'gpt-5.2-codex-xhigh'))")
+    MODEL=$(python3 -c "import json; c=json.load(open('.canvas-config.json')); print(c.get('codex_model', 'gpt-5.2-codex'))")
+    EFFORT=$(python3 -c "import json; c=json.load(open('.canvas-config.json')); print(c.get('codex_reasoning_effort', 'xhigh'))")
 else
     BACKEND="claude"
     MODEL=""
+    EFFORT=""
 fi
-echo "Backend: $BACKEND, Model: $MODEL"
+echo "Backend: $BACKEND, Model: $MODEL, Effort: $EFFORT"
 ```
 
 **If `reasoning_backend` is `"codex"`:** Use Codex CLI (see Codex Backend section)
@@ -48,15 +50,18 @@ echo "Backend: $BACKEND, Model: $MODEL"
 ### Execution
 
 ```bash
-# Get model from config (default: gpt-5.2-codex-xhigh)
-MODEL=$(python3 -c "import json; c=json.load(open('.canvas-config.json')); print(c.get('codex_model', 'gpt-5.2-codex-xhigh'))")
+# Get model and reasoning effort from config
+MODEL=$(python3 -c "import json; c=json.load(open('.canvas-config.json')); print(c.get('codex_model', 'gpt-5.2-codex'))")
+EFFORT=$(python3 -c "import json; c=json.load(open('.canvas-config.json')); print(c.get('codex_reasoning_effort', 'xhigh'))")
 
-codex exec --model "$MODEL" --full-auto --output-last-message /tmp/codex-result.md "YOUR_TASK"
+codex exec --model "$MODEL" --config model_reasoning_effort="$EFFORT" --full-auto --skip-git-repo-check --output-last-message /tmp/codex-result.md "YOUR_TASK"
 ```
 
 **Flags:**
-- `--model` - Model from config (default: `gpt-5.2-codex-xhigh`)
+- `--model` - Model name (default: `gpt-5.2-codex`)
+- `--config model_reasoning_effort=` - Reasoning effort level (default: `xhigh`)
 - `--full-auto` - Run without interactive prompts
+- `--skip-git-repo-check` - Skip git repository validation
 - `--output-last-message /tmp/codex-result.md` - Capture response to file
 
 For file modifications, add `--dangerously-bypass-approvals-and-sandbox` if trusted.
@@ -64,9 +69,10 @@ For file modifications, add `--dangerously-bypass-approvals-and-sandbox` if trus
 ### Example: Plan Review
 
 ```bash
-MODEL=$(python3 -c "import json; c=json.load(open('.canvas-config.json')); print(c.get('codex_model', 'gpt-5.2-codex-xhigh'))")
+MODEL=$(python3 -c "import json; c=json.load(open('.canvas-config.json')); print(c.get('codex_model', 'gpt-5.2-codex'))")
+EFFORT=$(python3 -c "import json; c=json.load(open('.canvas-config.json')); print(c.get('codex_reasoning_effort', 'xhigh'))")
 
-codex exec --model "$MODEL" --full-auto --output-last-message /tmp/codex-result.md "Review this plan and identify blindspots, corner cases, edge cases, and potential issues:
+codex exec --model "$MODEL" --config model_reasoning_effort="$EFFORT" --full-auto --skip-git-repo-check --output-last-message /tmp/codex-result.md "Review this plan and identify blindspots, corner cases, edge cases, and potential issues:
 
 PLAN:
 [Your plan here]

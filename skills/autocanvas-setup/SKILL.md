@@ -147,11 +147,25 @@ Use AskUserQuestion:
 
 **If user selects Gemini:**
 
-- Ask user to provide their GEMINI_API_KEY
-- Create `.env` file with the key
+- Display instructions to user:
+  ```
+  Please create a .env file in this folder with your Gemini API key:
+
+  1. Create a file named `.env` in the current directory
+  2. Add this line: GEMINI_API_KEY=your_api_key_here
+  3. Save the file
+
+  You can get an API key from: https://makersuite.google.com/app/apikey
+  ```
+- Use AskUserQuestion:
+  - Question: "Have you created the .env file with your GEMINI_API_KEY?"
+  - Options:
+    - "Yes, .env file is ready"
+    - "I need help"
+- Verify .env file exists before proceeding
 - Set config values:
   - `summarization_backend`: `"gemini"`
-  - `gemini_model`: `"gemini-3-flash-preview"` (default, or let user choose)
+  - `gemini_model`: `"gemini-3-flash-preview"` (default)
 
 **If user selects Claude:**
 
@@ -193,22 +207,31 @@ npm install -g @openai/codex
 ```
 
 After installation (or if already installed), ask for model preference:
-- Question: "Which Codex model do you want to use for complex reasoning?"
+- Question: "Which Codex model do you want to use?"
 - Header: "Codex Model"
 - Options:
-  - "gpt-5.2-codex-xhigh (Recommended, best reasoning)"
-  - "gpt-5.2-codex-high (Good balance)"
+  - "gpt-5.2-codex (Recommended)"
   - "Other (I'll type the model name)"
 
-Save the selection. Set config values:
+Then ask for reasoning effort:
+- Question: "What reasoning effort level?"
+- Header: "Effort"
+- Options:
+  - "xhigh (Recommended, best reasoning)"
+  - "high (Good balance)"
+  - "medium (Faster)"
+
+Save the selections. Set config values:
 - `reasoning_backend`: `"codex"`
-- `codex_model`: `"{selected_model}"` (default: `"gpt-5.2-codex-xhigh"`)
+- `codex_model`: `"{selected_model}"` (default: `"gpt-5.2-codex"`)
+- `codex_reasoning_effort`: `"{selected_effort}"` (default: `"xhigh"`)
 
 **If user selects Claude (or falls back to Claude):**
 
 Set config values:
 - `reasoning_backend`: `"claude"`
 - `codex_model`: `null`
+- `codex_reasoning_effort`: `null`
 
 ### Step 9: Create Configuration
 
@@ -226,7 +249,8 @@ config = {
     "summarization_backend": "gemini",  # or "claude"
     "gemini_model": "gemini-3-flash-preview",  # null if using claude
     "reasoning_backend": "codex",  # or "claude"
-    "codex_model": "gpt-5.2-codex-xhigh",  # null if using claude
+    "codex_model": "gpt-5.2-codex",  # null if using claude
+    "codex_reasoning_effort": "xhigh",  # xhigh, high, or medium
     "courses": [
         {
             "id": "{course_id}",

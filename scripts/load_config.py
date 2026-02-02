@@ -12,6 +12,7 @@ Usage:
     python3 load_config.py --gemini-model         # Print gemini model name
     python3 load_config.py --reasoning-backend    # Print reasoning backend (codex or claude)
     python3 load_config.py --codex-model          # Print codex model name
+    python3 load_config.py --codex-effort         # Print codex reasoning effort
 """
 
 import argparse
@@ -79,6 +80,7 @@ def main():
     parser.add_argument("--gemini-model", action="store_true", help="Print gemini model")
     parser.add_argument("--reasoning-backend", action="store_true", help="Print reasoning backend")
     parser.add_argument("--codex-model", action="store_true", help="Print codex model")
+    parser.add_argument("--codex-effort", action="store_true", help="Print codex reasoning effort")
     parser.add_argument("--validate", action="store_true", help="Validate config and exit")
 
     args = parser.parse_args()
@@ -104,7 +106,9 @@ def main():
     elif args.reasoning_backend:
         print(config.get("reasoning_backend", "claude"))
     elif args.codex_model:
-        print(config.get("codex_model", "gpt-5.2-codex-xhigh"))
+        print(config.get("codex_model", "gpt-5.2-codex"))
+    elif args.codex_effort:
+        print(config.get("codex_reasoning_effort", "xhigh"))
     else:
         # Print full config
         print(json.dumps(config, indent=2))

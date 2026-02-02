@@ -5,7 +5,8 @@
   "summarization_backend": "gemini",
   "gemini_model": "gemini-3-flash-preview",
   "reasoning_backend": "codex",
-  "codex_model": "gpt-5.2-codex-xhigh",
+  "codex_model": "gpt-5.2-codex",
+  "codex_reasoning_effort": "xhigh",
   "courses": [
     {
       "id": "123456",
