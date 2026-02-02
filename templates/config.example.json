@@ -2,6 +2,8 @@
   "canvas_base_url": "https://your-school.instructure.com",
   "cookies_file": "./cookies.json",
   "gemini_env_file": "./.env",
+  "reasoning_backend": "codex",
+  "codex_model": "gpt-5.2-codex-xhigh",
   "courses": [
     {
       "id": "123456",

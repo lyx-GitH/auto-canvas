@@ -148,7 +148,58 @@ If yes:
 - Ask user to provide their GEMINI_API_KEY
 - Create `.env` file with the key
 
-### Step 8: Create Configuration
+### Step 8: Complex Reasoning Backend (Codex vs Claude)
+
+Use AskUserQuestion:
+- Question: "For complex math/algorithm reasoning, do you want to use OpenAI Codex or Claude?"
+- Header: "Reasoning"
+- Options:
+  - "OpenAI Codex (requires separate installation)"
+  - "Claude subagent (no extra setup needed)"
+
+**If user selects Codex:**
+
+Check if codex is installed:
+```bash
+if command -v codex &> /dev/null; then
+    echo "CODEX_INSTALLED"
+else
+    echo "CODEX_NOT_INSTALLED"
+fi
+```
+
+If not installed, use AskUserQuestion:
+- Question: "Codex CLI is not installed. Would you like to install it now?"
+- Options:
+  - "Yes, install codex (requires npm)"
+  - "No, use Claude subagent instead"
+
+If user wants to install:
+```bash
+npm install -g @openai/codex
+```
+
+After installation (or if already installed), ask for model preference:
+- Question: "Which Codex model do you want to use for complex reasoning?"
+- Header: "Codex Model"
+- Options:
+  - "gpt-5.2-codex-xhigh (Recommended, best reasoning)"
+  - "gpt-5.2-codex-high (Good balance)"
+  - "Other (I'll type the model name)"
+
+Save the selection. Set config values:
+- `reasoning_backend`: `"codex"`
+- `codex_model`: `"{selected_model}"` (default: `"gpt-5.2-codex-xhigh"`)
+
+**If user selects Claude (or falls back to Claude):**
+
+Set config values:
+- `reasoning_backend`: `"claude"`
+- `codex_model`: `null`
+
+### Step 9: Create Configuration
+
+**Note:** Step numbers 9-11 shifted from original 8-10.
 
 Write `.canvas-config.json`:
 
@@ -159,6 +210,8 @@ config = {
     "canvas_base_url": "{CANVAS_URL}",
     "cookies_file": "./cookies.json",
     "gemini_env_file": "./.env",
+    "reasoning_backend": "codex",  # or "claude"
+    "codex_model": "gpt-5.2-codex-xhigh",  # null if using claude
     "courses": [
         {
             "id": "{course_id}",

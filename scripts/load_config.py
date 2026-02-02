@@ -8,6 +8,8 @@ Usage:
     python3 load_config.py --cookies-file     # Print cookies file path
     python3 load_config.py --courses          # Print courses as JSON array
     python3 load_config.py --course-folders   # Print space-separated folder names
+    python3 load_config.py --reasoning-backend # Print reasoning backend (codex or claude)
+    python3 load_config.py --codex-model      # Print codex model name
 """
 
 import argparse
@@ -71,6 +73,8 @@ def main():
     parser.add_argument("--cookies-file", action="store_true", help="Print cookies file path")
     parser.add_argument("--courses", action="store_true", help="Print courses as JSON")
     parser.add_argument("--course-folders", action="store_true", help="Print folder names")
+    parser.add_argument("--reasoning-backend", action="store_true", help="Print reasoning backend")
+    parser.add_argument("--codex-model", action="store_true", help="Print codex model")
     parser.add_argument("--validate", action="store_true", help="Validate config and exit")
 
     args = parser.parse_args()
@@ -89,6 +93,10 @@ def main():
     elif args.course_folders:
         folders = [c["folder"] for c in config["courses"]]
         print(" ".join(folders))
+    elif args.reasoning_backend:
+        print(config.get("reasoning_backend", "claude"))
+    elif args.codex_model:
+        print(config.get("codex_model", "gpt-5.2-codex-xhigh"))
     else:
         # Print full config
         print(json.dumps(config, indent=2))

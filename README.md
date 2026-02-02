@@ -8,7 +8,7 @@ A Claude Code plugin for automating coursework from Canvas LMS. Syncs slides and
 - **`/sync-canvas`** - Fetch new slides and homework from Canvas LMS
 - **`/do-my-homework`** - Complete assignments with LaTeX output and study notes
 - **`/gemini`** - Delegate PDF/image analysis to Google Gemini
-- **`/codex`** - Delegate complex reasoning to OpenAI Codex
+- **`/codex`** - Delegate complex reasoning (Codex or Claude subagent)
 
 ## Quick Start
 
@@ -43,6 +43,7 @@ The setup wizard will guide you through:
 - Entering your Canvas URL
 - Fetching your course list automatically
 - Selecting which courses to sync
+- Choosing reasoning backend (Codex or Claude)
 - Creating the folder structure
 
 That's it! After setup, just run `/sync-canvas` to fetch your coursework.
@@ -71,6 +72,8 @@ Create `.canvas-config.json`:
   "canvas_base_url": "https://your-school.instructure.com",
   "cookies_file": "./cookies.json",
   "gemini_env_file": "./.env",
+  "reasoning_backend": "codex",
+  "codex_model": "gpt-5.2-codex-xhigh",
   "courses": [
     {
       "id": "123456",
@@ -80,6 +83,8 @@ Create `.canvas-config.json`:
   ]
 }
 ```
+
+**Note:** Set `reasoning_backend` to `"claude"` if you don't have Codex installed.
 
 ### 3. Set Up API Keys (Optional)
 
@@ -158,6 +163,8 @@ After setup, your homework folder will look like:
 | `canvas_base_url` | Your school's Canvas URL (e.g., `https://school.instructure.com`) |
 | `cookies_file` | Path to cookies.json (relative to config file) |
 | `gemini_env_file` | Path to .env with GEMINI_API_KEY |
+| `reasoning_backend` | `"codex"` or `"claude"` - backend for complex reasoning |
+| `codex_model` | Codex model to use (default: `gpt-5.2-codex-xhigh`) |
 | `courses` | Array of course objects |
 | `courses[].id` | Canvas course ID (from URL: `/courses/XXXXXX`) |
 | `courses[].folder` | Local folder name for this course |
