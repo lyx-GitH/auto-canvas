@@ -41,9 +41,40 @@ Present extracted info and ask user with AskUserQuestion:
 1. Confirm/correct course name and assignment name
 2. "Would you like to 'bake into notes' after completion?" (Explain: summarizes key concepts to `{course}/notes.md` for exam prep)
 
-Store user's bake preference for Step 6.
+Store user's bake preference for Step 7.
 
-### Step 3: Setup Working Directory
+### Step 3: Capability Check
+
+Before proceeding, analyze the assignment for requirements beyond an agent's capability:
+
+**Skip the assignment if it requires:**
+
+1. **Beyond-terminal software** - GUI applications, specialized desktop software, IDE-specific features, or tools without CLI access
+   - Examples: Wireshark GUI analysis, MATLAB with Simulink GUI, hardware simulators requiring visual interaction, proprietary software without CLI
+
+2. **Physical operations** - Lab work, hands-on experiments, hardware assembly, or real-world activities
+   - Examples: Circuit building, chemistry experiments, physical measurements, hardware configuration, in-person presentations
+
+3. **Group work** - Collaborative assignments explicitly requiring multiple students
+   - Examples: Team projects with role assignments, peer review requirements, group presentations, collaborative coding with mandatory pair programming
+
+**If any of these conditions are detected:**
+- Do NOT proceed with the homework
+- Report to user clearly:
+  ```
+  SKIPPING: This assignment cannot be completed by an agent.
+
+  Reason: [specific reason - e.g., "Requires MATLAB Simulink GUI which cannot be operated via terminal"]
+
+  Assignment: {course_name}/{hw_name}
+
+  Recommendation: [helpful suggestion for the user]
+  ```
+- Exit the skill gracefully
+
+**If the assignment is within capability:** proceed to Step 4.
+
+### Step 4: Setup Working Directory
 
 Set `hw_pwd` = current working directory + `{course_name}/{hw_name}/`
 
@@ -71,7 +102,7 @@ mkdir -p {course_name}/{hw_name}
   - Option B: "Construct project from scratch"
 - If skeleton provided, copy to `{hw_pwd}/` preserving structure
 
-### Step 4: Solve
+### Step 5: Solve
 
 **For written homework:**
 Create `{hw_pwd}/solution.tex` with proper LaTeX:
@@ -113,7 +144,7 @@ Create `{hw_pwd}/solution.tex` with proper LaTeX:
 - **For complex algorithms or stuck debugging**: Call `/autocanvas-codex` skill
 - Create any required configuration files
 
-### Step 5: Reflect and Verify
+### Step 6: Reflect and Verify
 
 **For written homework:**
 - Review each solution step-by-step
@@ -129,7 +160,7 @@ Create `{hw_pwd}/solution.tex` with proper LaTeX:
 - If tests fail: debug (use `/autocanvas-codex` if stuck), fix code, retest
 - Repeat until all tests pass
 
-### Step 6: Bake into Notes
+### Step 7: Bake into Notes
 
 **Only if user agreed in Step 2.**
 
@@ -167,7 +198,7 @@ Create or append to `{course_name}/notes.md`:
 - Extract ALL teachable content - homework is their primary learning source
 - This is where verbose explanations and background knowledge belong
 
-### Step 7: Polish and Handover
+### Step 8: Polish and Handover
 
 **Polish solution.tex:**
 - Ensure conciseness - remove any verbose explanations that crept in
