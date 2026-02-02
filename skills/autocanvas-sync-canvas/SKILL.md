@@ -1,6 +1,6 @@
 ---
 name: autocanvas-sync-canvas
-description: Sync coursework from Canvas LMS. Fetches new slides and homework, then COMPLETES all new assignments by calling /autocanvas-do-my-homework for each one. Also summarizes lectures and updates study notes. Use when asked to "sync canvas", "check for new homework", "update courses", or "fetch slides". IMPORTANT - This skill MUST call /autocanvas-do-my-homework to solve homework, not just download it.
+description: Sync coursework from Canvas LMS. Fetches new slides and homework, asks user if they want auto-completion, and if YES then MUST complete all assignments by calling /autocanvas-do-my-homework. Also summarizes lectures and updates study notes. Use when asked to "sync canvas", "check for new homework", or "update courses".
 argument-hint: [course-name] (optional, syncs all courses if omitted)
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep, WebFetch, Task, Skill
 user-invocable: true
@@ -108,6 +108,19 @@ Download new slides to `{course_folder}/slides/`
 
 Create `hw{N}/` folder and download description + attachments.
 
+### Step 4.5: Ask User About Auto-Completion
+
+**If new homework was found, ask the user:**
+
+Use AskUserQuestion:
+- Question: "New homework found. Do you want me to automatically complete the assignments?"
+- Header: "Auto-complete"
+- Options:
+  - "Yes, complete all homework automatically"
+  - "No, just download the files"
+
+**Store the user's choice for Step 5.2.**
+
 ### Step 5: Spawn Sub-Agents and Continue Working (Non-Blocking)
 
 **CRITICAL: DO NOT WAIT for sub-agents. Launch them in background and IMMEDIATELY continue to the next task.**
@@ -134,11 +147,21 @@ Master Agent (this skill)
 
 Spawn summarization agents with `run_in_background: true`. **Do NOT use TaskOutput to wait for them yet.** Immediately proceed to Step 5.2 after spawning.
 
-#### 5.2: Complete Homework Assignments (FOREGROUND - MANDATORY)
+#### 5.2: Complete Homework Assignments (IF USER SAID YES)
 
-**CRITICAL: After spawning summarization agents, you MUST complete the homework assignments.**
+**Check the user's choice from Step 4.5:**
 
-**This is the main purpose of /autocanvas-sync-canvas - do not skip this step!**
+---
+
+**IF USER CHOSE "No, just download the files":**
+
+Skip to Step 6. Do not call /autocanvas-do-my-homework.
+
+---
+
+**IF USER CHOSE "Yes, complete all homework automatically":**
+
+**MANDATORY: You MUST complete ALL homework assignments. No exceptions.**
 
 For EACH new assignment found in Step 4:
 
@@ -158,13 +181,15 @@ For EACH new assignment found in Step 4:
 
 3. **Repeat for each new assignment** - do not stop after one.
 
-**DO NOT:**
+**WHEN USER SAID YES, YOU MUST NOT:**
 - Skip homework completion
 - Only download files without solving
-- Wait for summarization before starting homework
+- Stop after completing just one assignment
 - Forget to call /autocanvas-do-my-homework
 
-**The homework MUST be solved. This is not optional.**
+**User said YES = homework MUST be solved. This is NOT optional.**
+
+---
 
 #### 5.3: Summarization Sub-Agent Details
 
