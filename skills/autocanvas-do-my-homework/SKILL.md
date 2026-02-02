@@ -1,6 +1,6 @@
 ---
-name: do-my-homework
-description: Complete coursework assignments and coding projects. Extracts info, sets up workspace, solves problems (using /codex for complex tasks), reflects/tests, bakes notes for exam prep, and polishes output to PDF.
+name: autocanvas-do-my-homework
+description: Complete coursework assignments and coding projects. Extracts info, sets up workspace, solves problems (using /autocanvas-codex for complex tasks), reflects/tests, bakes notes for exam prep, and polishes output to PDF.
 argument-hint: <path-to-homework-file-or-project-folder>
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep, WebFetch, AskUserQuestion, Skill
 user-invocable: true
@@ -104,13 +104,13 @@ Create `{hw_pwd}/solution.tex` with proper LaTeX:
 - Brief justifications only where mathematically necessary
 - All background knowledge, explanations, tricks go to notes.md instead
 
-**For complex math/algorithms/proofs**: Call `/codex` skill
+**For complex math/algorithms/proofs**: Call `/autocanvas-codex` skill
 
 **For coding projects:**
 - Implement required functionality in `{hw_pwd}/`
 - Follow language best practices and style guides
 - Add comments explaining non-obvious logic only
-- **For complex algorithms or stuck debugging**: Call `/codex` skill
+- **For complex algorithms or stuck debugging**: Call `/autocanvas-codex` skill
 - Create any required configuration files
 
 ### Step 5: Reflect and Verify
@@ -119,14 +119,14 @@ Create `{hw_pwd}/solution.tex` with proper LaTeX:
 - Review each solution step-by-step
 - Verify calculations and logic
 - Check edge cases (n=0, n=1, negative, infinity)
-- Use `/codex` to double-check complex proofs if uncertain
+- Use `/autocanvas-codex` to double-check complex proofs if uncertain
 - If errors found: fix in solution.tex, repeat verification
 
 **For coding projects:**
 - Run provided test cases
 - If no tests provided, create basic tests
 - Test edge cases and error handling
-- If tests fail: debug (use `/codex` if stuck), fix code, retest
+- If tests fail: debug (use `/autocanvas-codex` if stuck), fix code, retest
 - Repeat until all tests pass
 
 ### Step 6: Bake into Notes
@@ -223,7 +223,7 @@ Now, let's substitute our given values...
 ## Important Notes
 
 - All work stored in `{course_name}/{hw_name}/`
-- Use `/codex` for complex proofs, algorithms, debugging
+- Use `/autocanvas-codex` for complex proofs, algorithms, debugging
 - solution.tex = concise derivations + boxed answers
 - notes.md = explanations, background, exam prep
 - Keep notes.md cumulative across assignments

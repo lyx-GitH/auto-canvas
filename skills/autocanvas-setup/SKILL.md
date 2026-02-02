@@ -1,5 +1,5 @@
 ---
-name: setup
+name: autocanvas-setup
 description: Set up auto-canvas for first-time use. Creates config file, fetches course list from Canvas, and builds folder structure. Use when asked to "setup canvas", "initialize homework folder", or "configure auto-canvas".
 argument-hint: (no arguments needed)
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep, WebFetch, AskUserQuestion
@@ -295,8 +295,8 @@ Each course folder follows this schema:
 
 ## Skills
 
-- `/sync-canvas` - Fetch new slides/homework from Canvas
-- `/do-my-homework <path>` - Complete a specific assignment
+- `/autocanvas-sync-canvas` - Fetch new slides/homework from Canvas
+- `/autocanvas-do-my-homework <path>` - Complete a specific assignment
 ```
 
 ### Step 11: Final Summary
@@ -318,12 +318,12 @@ Display to user:
 
 1. **Sync your courses:**
    ```
-   /sync-canvas
+   /autocanvas-sync-canvas
    ```
 
 2. **Complete an assignment:**
    ```
-   /do-my-homework {first_course}/hw1/
+   /autocanvas-do-my-homework {first_course}/hw1/
    ```
 
 ### Important:
@@ -342,7 +342,7 @@ Please:
 1. Log into Canvas in your browser
 2. Re-export cookies using the extension
 3. Save to cookies.json
-4. Run /setup again
+4. Run /autocanvas-setup again
 ```
 
 ### No Courses Found

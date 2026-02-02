@@ -1,5 +1,5 @@
 ---
-name: sync-canvas
+name: autocanvas-sync-canvas
 description: Sync coursework from Canvas LMS. Fetches new slides and homework, places them correctly, auto-completes eligible assignments, and updates study notes. Use when asked to "sync canvas", "check for new homework", "update courses", or "fetch slides".
 argument-hint: [course-name] (optional, syncs all courses if omitted)
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep, WebFetch, Task, Skill
@@ -29,10 +29,10 @@ Use AskUserQuestion to ask the user:
 - Question: "Auto-canvas is not set up yet. Would you like to run setup now?"
 - Header: "Setup"
 - Options:
-  - "Yes, run /setup now"
+  - "Yes, run /autocanvas-setup now"
   - "No, I'll set it up manually later"
 
-If user selects "Yes", invoke the `/setup` skill using the Skill tool and STOP this skill.
+If user selects "Yes", invoke the `/autocanvas-setup` skill using the Skill tool and STOP this skill.
 If user selects "No", display instructions and STOP:
 
 ```
@@ -41,7 +41,7 @@ To set up manually, you need:
 2. cookies.json - Export from your browser's Canvas session
 3. .env - Add your GEMINI_API_KEY
 
-Or run /setup anytime to use the interactive wizard.
+Or run /autocanvas-setup anytime to use the interactive wizard.
 ```
 
 **Only proceed to Step 1 if setup is complete.**
@@ -140,7 +140,7 @@ Complete the homework at {homework_path}
 IMPORTANT: When baking notes, write to /tmp/hw-notes-{course}.md instead of notes.md directly.
 This avoids conflicts with parallel lecture summarization.
 
-Follow /do-my-homework procedure but output notes to the temp file.
+Follow /autocanvas-do-my-homework procedure but output notes to the temp file.
 """
 ```
 

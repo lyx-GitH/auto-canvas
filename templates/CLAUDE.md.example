@@ -31,5 +31,5 @@ Each course folder follows this schema:
 
 ## Skills
 
-- `/sync-canvas` - Fetch new slides/homework from Canvas, auto-complete eligible assignments, update notes
-- `/do-my-homework <path>` - Complete a specific homework or project
+- `/autocanvas-sync-canvas` - Fetch new slides/homework from Canvas, auto-complete eligible assignments, update notes
+- `/autocanvas-do-my-homework <path>` - Complete a specific homework or project

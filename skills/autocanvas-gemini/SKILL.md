@@ -1,5 +1,5 @@
 ---
-name: gemini
+name: autocanvas-gemini
 description: Delegate tasks to the configured summarization backend (Gemini or Claude) for PDF analysis, image understanding, and document summarization. Use for summarizing lectures, analyzing diagrams, or extracting content from documents.
 argument-hint: <file_path> "<prompt>"
 allowed-tools: Bash, Read, Write, Glob, Grep, Task

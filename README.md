@@ -4,11 +4,11 @@ A Claude Code plugin for automating coursework from Canvas LMS. Syncs slides and
 
 ## Features
 
-- **`/setup`** - Interactive setup wizard (run this first!)
-- **`/sync-canvas`** - Fetch new slides and homework from Canvas LMS
-- **`/do-my-homework`** - Complete assignments with LaTeX output and study notes
-- **`/gemini`** - Delegate PDF/image analysis (Gemini or Claude subagent)
-- **`/codex`** - Delegate complex reasoning (Codex or Claude subagent)
+- **`/autocanvas-setup`** - Interactive setup wizard (run this first!)
+- **`/autocanvas-sync-canvas`** - Fetch new slides and homework from Canvas LMS
+- **`/autocanvas-do-my-homework`** - Complete assignments with LaTeX output and study notes
+- **`/autocanvas-gemini`** - Delegate PDF/image analysis (Gemini or Claude subagent)
+- **`/autocanvas-codex`** - Delegate complex reasoning (Codex or Claude subagent)
 
 ## Quick Start
 
@@ -35,7 +35,7 @@ pip install google-genai python-dotenv
 mkdir ~/homework
 cd ~/homework
 claude
-> /setup
+> /autocanvas-setup
 ```
 
 The setup wizard will guide you through:
@@ -47,7 +47,7 @@ The setup wizard will guide you through:
 - Choosing reasoning backend (Codex or Claude)
 - Creating the folder structure
 
-That's it! After setup, just run `/sync-canvas` to fetch your coursework.
+That's it! After setup, just run `/autocanvas-sync-canvas` to fetch your coursework.
 
 ---
 
@@ -112,25 +112,25 @@ npm install -g @openai/codex
 ```bash
 cd ~/homework
 claude
-> /sync-canvas
+> /autocanvas-sync-canvas
 ```
 
 ### Sync Specific Course
 
 ```bash
-> /sync-canvas CS101
+> /autocanvas-sync-canvas CS101
 ```
 
 ### Complete an Assignment
 
 ```bash
-> /do-my-homework CS101_Intro/hw1/
+> /autocanvas-do-my-homework CS101_Intro/hw1/
 ```
 
 ### Analyze a Document with Gemini
 
 ```bash
-> /gemini analyze slides/lecture5.pdf "Extract key concepts for exam"
+> /autocanvas-gemini analyze slides/lecture5.pdf "Extract key concepts for exam"
 ```
 
 ## Folder Structure
@@ -197,27 +197,27 @@ The `.gitignore` template excludes these automatically.
 - LaTeX distribution (for PDF compilation)
   - macOS: `brew install --cask mactex`
   - Ubuntu: `sudo apt install texlive-full`
-- Google Gemini API key (for `/gemini` and lecture summarization)
-- OpenAI Codex CLI (optional, for `/codex`)
+- Google Gemini API key (for `/autocanvas-gemini` and lecture summarization)
+- OpenAI Codex CLI (optional, for `/autocanvas-codex`)
 
 ## How It Works
 
-### `/sync-canvas`
+### `/autocanvas-sync-canvas`
 
 1. Loads configuration from `.canvas-config.json`
 2. Authenticates with Canvas using cookies
 3. Fetches file/assignment lists via Canvas API
 4. Downloads only new content (delta sync)
 5. Spawns parallel sub-agents for:
-   - Homework completion (`/do-my-homework`)
-   - Lecture summarization (`/gemini`)
+   - Homework completion (`/autocanvas-do-my-homework`)
+   - Lecture summarization (`/autocanvas-gemini`)
 6. Merges results into `notes.md`
 
-### `/do-my-homework`
+### `/autocanvas-do-my-homework`
 
 1. Parses assignment description (PDF/MD/images)
 2. Creates structured workspace
-3. Solves problems (uses `/codex` for complex math)
+3. Solves problems (uses `/autocanvas-codex` for complex math)
 4. Generates concise LaTeX solution
 5. Optionally "bakes" key concepts into `notes.md`
 6. Compiles to PDF

@@ -1,5 +1,5 @@
 ---
-name: codex
+name: autocanvas-codex
 description: Delegate complex math, algorithm, or coding reasoning to the configured reasoning backend (Codex or Claude subagent). Use for deep reasoning, solving difficult problems, or reviewing plans for blindspots and edge cases.
 argument-hint: [task description]
 allowed-tools: Bash, Read, Write, Glob, Grep, Task
